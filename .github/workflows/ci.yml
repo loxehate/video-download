@@ -8,20 +8,77 @@ jobs:
 
     permissions:
       contents: write
-      
+
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: download
+      - name: Make youtube-dl executable
+        run: chmod +x ./bin/youtube-dl
+
+      - name: Install Git LFS
         run: |
-          git config --local user.email "loxehate@gmail.com"
+          curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+          sudo apt-get install git-lfs
+          git lfs install
+
+      - name: Track large video files
+        run: git lfs track "*.mp4"
+
+      - name: Configure Git user
+        run: |
+          git config --local user.email "loxe@gmail.com"
           git config --local user.name "loxe"
+
+      - name: Set Git remote URL
+        run: |
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git pull --rebase
-          pwd
-          chmod +x bin/yt-dlp
-          ./bin/yt-dlp -v --config-location config.txt
+
+      - name: Check for unstaged changes
+        id: check_changes
+        run: |
+          if git diff --quiet; then
+            echo "::set-output name=unstaged::false"
+          else
+            echo "::set-output name=unstaged::true"
+          fi
+
+      - name: Commit unstaged changes
+        if: steps.check_changes.outputs.unstaged == 'true'
+        run: |
           git add .
-          git commit -m "download youtube video"
+          git commit -m "Commit unstaged changes before rebase"
+
+      - name: Pull latest changes
+        run: git pull --rebase
+
+      - name: Download video with retry
+        run: |
+          max_retries=3
+          retry_count=0
+          download_success=false
+          while [ $retry_count -lt $max_retries ] && [ "$download_success" == "false" ]; do
+            ./bin/youtube-dl --config-location config.txt
+            if [ $? -eq 0 ]; then
+              download_success=true
+            else
+              retry_count=$((retry_count+1))
+              echo "Download attempt $retry_count failed. Retrying in 5 seconds..."
+              sleep 5
+            fi
+          done
+          if [ "$download_success" == "false" ]; then
+            echo "Failed to download video after $max_retries attempts."
+            exit 1
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Downloaded youtube video"
           git push
+
+      - name: Error handling
+        if: failure()
+        run: |
+          echo "An error occurred. Check the logs for details."

@@ -19,7 +19,8 @@ jobs:
           git config --local user.name "迷渡"
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git pull --rebase
-          chmod +x /bin/youtube-dl
+          pwd
+          chmod +x bin/youtube-dl
           ./bin/youtube-dl --config-location config.txt
           git add .
           git commit -m "download youtube video"

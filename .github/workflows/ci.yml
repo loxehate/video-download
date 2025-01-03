@@ -111,7 +111,7 @@ jobs:
         run: |
           while docker ps | grep -q "aliyunpan-sync"; do
               echo "等待视频同步完成"
-              sleep 10
+              sleep 30
           done
           echo "视频同步已完成,登陆云盘检查视频是否上传成功"
 

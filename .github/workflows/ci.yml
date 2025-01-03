@@ -15,13 +15,13 @@ jobs:
 
       - name: download
         run: |
-          git config --local user.email "justjavac@gmail.com"
-          git config --local user.name "迷渡"
+          git config --local user.email "loxehate@gmail.com"
+          git config --local user.name "loxe"
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git pull --rebase
           pwd
           chmod +x bin/yt-dlp
-          ./bin/yt-dlp --cookies-from-browser chrome --config-location config.txt
+          ./bin/yt-dlp --cookies-from-browser chromium --config-location config.txt
           git add .
           git commit -m "download youtube video"
           git push

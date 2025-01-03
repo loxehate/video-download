@@ -58,7 +58,7 @@ jobs:
           retry_count=0
           download_success=false
           while [ $retry_count -lt $max_retries ] && [ "$download_success" == "false" ]; do
-            ./bin/youtube-dl --config-location config.txt
+            ./bin/youtube-dl -v --config-location config.txt
             if [ $? -eq 0 ]; then
               download_success=true
             else

@@ -21,7 +21,7 @@ jobs:
           git pull --rebase
           pwd
           chmod +x bin/yt-dlp
-          ./bin/yt-dlp --config-location config.txt
+          ./bin/yt-dlp -v --config-location config.txt
           git add .
           git commit -m "download youtube video"
           git push

@@ -42,13 +42,14 @@ jobs:
 
       - name: Make youtube-dl executable
         run: chmod +x ./bin/yt-dlp
-        
+
       - name: Download video with retry
         run: |
           max_retries=3
           retry_count=0
           download_success=false
           while [ $retry_count -lt $max_retries ] && [ "$download_success" == "false" ]; do
+            pwd
             ./bin/yt-dlp -v --config-location config.txt
             if [ $? -eq 0 ]; then
               download_success=true

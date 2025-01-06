@@ -15,7 +15,7 @@ jobs:
           echo "Before freeing up disk space"
           echo "=============================================================================="
           df -hT
-          ll /home/runner/work/
+          ls -a /home/runner/work/
           echo "=============================================================================="
       
       - name: Maximize download space

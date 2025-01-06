@@ -15,7 +15,6 @@ jobs:
           echo "Before freeing up disk space"
           echo "=============================================================================="
           df -hT
-          ls -a /home/runner/work/
           echo "=============================================================================="
       
       - name: Maximize download space
@@ -29,7 +28,7 @@ jobs:
           # 如果空间还是不够用，可以把以下开启，清理出更多空间
           # remove-android: 'true'
           # remove-codeql: 'true'
-          build-mount-path: '/downloads'
+          build-mount-path: '/home/runner/work/video-download'
     
       - name: Free up disk space complete
         run: |

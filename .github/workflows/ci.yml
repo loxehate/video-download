@@ -17,7 +17,7 @@ jobs:
           df -hT
           echo "=============================================================================="
       
-      - name: Maximize build space
+      - name: Maximize download space
         uses: easimon/maximize-build-space@master
         with:
   
@@ -28,10 +28,7 @@ jobs:
           # 如果空间还是不够用，可以把以下开启，清理出更多空间
           # remove-android: 'true'
           # remove-codeql: 'true'
-          build-mount-path: '/var/lib/docker/'
-
-      - name: Restart docker
-        run: sudo service docker restart
+          build-mount-path: '/downloads'
     
       - name: Free up disk space complete
         run: |
@@ -45,43 +42,7 @@ jobs:
 
       - name: Make youtube-dl executable
         run: chmod +x ./bin/yt-dlp
-
-      - name: Install Git LFS
-        run: |
-          curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-          sudo apt-get install git-lfs
-          git lfs install
-
-      - name: Track large video files
-        run: git lfs track "*.mp4"
-
-      - name: Configure Git user
-        run: |
-          git config --local user.email "loxe@gmail.com"
-          git config --local user.name "loxe"
-
-      - name: Set Git remote URL
-        run: |
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-
-      - name: Check for unstaged changes
-        id: check_changes
-        run: |
-          if git diff --quiet; then
-            echo "::set-output name=unstaged::false"
-          else
-            echo "::set-output name=unstaged::true"
-          fi
-
-      - name: Commit unstaged changes
-        if: steps.check_changes.outputs.unstaged == 'true'
-        run: |
-          git add .
-          git commit -m "Commit unstaged changes before rebase"
-
-      - name: Pull latest changes
-        run: git pull --rebase
-
+        
       - name: Download video with retry
         run: |
           max_retries=3
